@@ -1,0 +1,20 @@
+{
+  "name": "vitepress-theme-demoblock-issuse",
+  "private": true,
+  "scripts": {
+    "dev": "yarn workspace @demo/docs dev",
+    "build": "yarn workspace @demo/docs build"
+  },
+  "files": [
+    "common/",
+    "components/",
+    "README.md"
+  ],
+  "main": "index.js",
+  "devDependencies": {
+    "lerna": "~3.22.1"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
+}
