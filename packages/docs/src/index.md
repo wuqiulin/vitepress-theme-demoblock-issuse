@@ -35,7 +35,7 @@
 <script>
 import { withRequest } from '@demo/hooks'
 import { ElMessage } from 'element-plus'
-import { reactive, toRefs, defineComponent, onMounted } from 'vue'
+import { reactive, toRefs, defineComponent, onBeforeMount } from 'vue'
 
 export default defineComponent({
   setup() {
@@ -123,21 +123,47 @@ export default defineComponent({
     const onRequestError = (d) => {
       console.error('记录日志~~~~~：', d.status)
     }
-
-    const useRequest = withRequest({
-      rightBusinessStatus,
-      onBusinessError,
-      onRequestError
+    
+    const requests = reactive({
+      data: [], run: () => {}, loading: false, error: null
     })
 
-    const { data, run, loading, error } = useRequest(queryMockBanner, {
-      manual: true,
-      onSuccess() {
-        ElMessage.success('查询成功')
-      }
+    onBeforeMount(() => {
+      // 此处因为vitepress 不能在beforeMount和mounted之外使用dom api
+      const useRequest = withRequest({
+        rightBusinessStatus,
+        onBusinessError,
+        onRequestError
+      })
+
+      const { data, run, loading, error } = useRequest(queryMockBanner, {
+        manual: true,
+        onSuccess() {
+          ElMessage.success('查询成功')
+        }
+      })
+      
+      requests.data = data
+      requests.run = run
+      requests.loading = loading
+      requests.error = error
     })
 
-    return { ...toRefs(state), run, loading, data, error }
+    // const useRequest = withRequest({
+    //   rightBusinessStatus,
+    //   onBusinessError,
+    //   onRequestError
+    // })
+    //
+    // const { data, run, loading, error } = useRequest(queryMockBanner, {
+    //   manual: true,
+    //   onSuccess() {
+    //     ElMessage.success('查询成功')
+    //   }
+    // })
+
+    // return { ...toRefs(state), run, loading, data, error }
+    return { ...toRefs(state), ...toRefs(requests) }
   }
 })
 </script>
